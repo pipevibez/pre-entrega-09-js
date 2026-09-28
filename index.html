@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestor de Servicios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <h1>Gestor de servicios</h1>
+      <p>Administrá el catálogo y mantené su estado sincronizado.</p>
+    </header>
+
+    <section id="estado-sistema" class="sync-status" aria-live="polite">
+      <div class="sync-info">
+        <span id="sync-indicator" class="sync-indicator" aria-hidden="true"></span>
+        <div>
+          <p id="estado-sync" class="sync-title">Preparando catálogo</p>
+          <p id="detalle-sync" class="sync-detail">Recuperando la información guardada.</p>
+        </div>
+      </div>
+      <button type="button" id="btn-sincronizar" class="btn-sync">Sincronizar ahora</button>
+    </section>
+
+    <section class="form-section">
+      <div class="neumorphic-panel form-panel">
+        <div class="section-heading">
+          <span class="section-number">01</span>
+          <h2 id="titulo-formulario">Agregar servicio</h2>
+        </div>
+
+        <form id="form-servicio">
+          <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" placeholder="Ej. Desarrollo de software" autocomplete="off" required />
+          </div>
+
+          <div class="campo">
+            <label for="categoria">Categoría</label>
+            <input type="text" id="categoria" placeholder="Ej. Sistemas" autocomplete="off" required />
+          </div>
+
+          <div class="campo campo-precio">
+            <label for="precio">Precio</label>
+            <div class="input-precio">
+              <span>USD</span>
+              <input type="number" id="precio" placeholder="25000" min="1" required />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="btn-cancelar-edicion" class="btn-cancelar-edicion" hidden>Cancelar edición</button>
+            <button type="submit" class="btn-agregar">
+              <span id="texto-btn-guardar">Agregar servicio</span>
+              <span id="simbolo-btn-guardar" class="btn-symbol">+</span>
+            </button>
+          </div>
+        </form>
+
+        <p id="mensaje" class="mensaje" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="catalogo">
+      <div class="catalogo-heading">
+        <span class="section-number">02</span>
+        <h2>Catálogo de servicios</h2>
+      </div>
+
+      <div class="catalogo-tools">
+        <div class="buscador">
+          <label for="buscar">Buscar servicio</label>
+          <div class="search-field">
+            <input type="text" id="buscar" placeholder="Nombre o categoría" autocomplete="off" />
+            <span class="search-mark" aria-hidden="true">⌕</span>
+          </div>
+        </div>
+
+        <div class="catalogo-actions">
+          <div class="contador neumorphic-small">
+            <span id="cantidad-servicios">0</span>
+            <small>servicios</small>
+          </div>
+          <button type="button" id="btn-vaciar-catalogo" class="btn-vaciar neumorphic-small">Vaciar catálogo</button>
+        </div>
+      </div>
+
+      <p class="storage-note">Los cambios se guardan automáticamente en este navegador.</p>
+      <div id="contenedor-servicios" class="servicios-grid"></div>
+      <p id="sin-resultados" class="sin-resultados" hidden>No hay servicios para mostrar.</p>
+    </section>
+  </main>
+
+  <button type="button" id="btn-servicios-flotante" class="glass-floating-button" aria-label="Ver resumen del catálogo" aria-controls="panel-servicios" aria-expanded="false">
+    <svg class="glass-button-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <linearGradient id="glassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.72" />
+          <stop offset="28%" stop-color="#bdefff" stop-opacity="0.32" />
+          <stop offset="68%" stop-color="#70d8ff" stop-opacity="0.16" />
+          <stop offset="100%" stop-color="#d9f7ff" stop-opacity="0.48" />
+        </linearGradient>
+        <linearGradient id="glassBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+          <stop offset="42%" stop-color="#d9f7ff" stop-opacity="0.35" />
+          <stop offset="72%" stop-color="#69d7ff" stop-opacity="0.2" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.65" />
+        </linearGradient>
+        <filter id="glass-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="9" />
+        </filter>
+        <filter id="liquid-glass" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blurAlpha" />
+          <feSpecularLighting in="blurAlpha" surfaceScale="8" specularConstant="1.3" specularExponent="18" lighting-color="#ffffff" result="specular">
+            <feDistantLight azimuth="225" elevation="58" />
+          </feSpecularLighting>
+          <feComposite in="specular" in2="SourceAlpha" operator="in" result="specularInside" />
+          <feMerge>
+            <feMergeNode in="SourceGraphic" />
+            <feMergeNode in="specularInside" />
+          </feMerge>
+        </filter>
+      </defs>
+      <circle cx="104" cy="110" r="66" fill="#11212d" opacity="0.25" filter="url(#glass-shadow)" />
+      <circle cx="100" cy="100" r="70" fill="url(#glassGrad)" stroke="url(#glassBorder)" stroke-width="3" filter="url(#liquid-glass)" />
+      <path d="M 48 83 C 61 46, 104 29, 140 51 C 111 43, 76 55, 48 83 Z" fill="#ffffff" opacity="0.34" />
+    </svg>
+
+    <span class="floating-service-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M5 5.5 H19 M5 12 H19 M5 18.5 H19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <circle cx="3" cy="5.5" r="1" fill="currentColor" />
+        <circle cx="3" cy="12" r="1" fill="currentColor" />
+        <circle cx="3" cy="18.5" r="1" fill="currentColor" />
+      </svg>
+    </span>
+
+    <span id="contador-flotante" class="floating-count">0</span>
+  </button>
+
+  <div id="glass-overlay" class="glass-overlay" aria-hidden="true"></div>
+
+  <aside id="panel-servicios" class="glass-services-panel" role="dialog" aria-modal="true" aria-labelledby="panel-servicios-titulo" aria-hidden="true">
+    <div class="glass-panel-highlight" aria-hidden="true"></div>
+    <div class="glass-panel-header">
+      <div>
+        <h2 id="panel-servicios-titulo">Resumen del catálogo</h2>
+        <p class="glass-panel-count"><span id="cantidad-panel">0</span> servicios cargados</p>
+      </div>
+      <button type="button" id="btn-cerrar-panel" class="glass-close-button" aria-label="Cerrar panel"><span aria-hidden="true">×</span></button>
+    </div>
+
+    <div class="glass-panel-divider"></div>
+    <div id="lista-servicios-panel" class="glass-services-list"></div>
+
+    <div class="glass-panel-footer">
+      <button type="button" id="btn-enviar-ventas" class="glass-sales-button">Enviar a ventas <span>→</span></button>
+      <p>El listado refleja el estado actual del catálogo.</p>
+    </div>
+  </aside>
+
+  <section id="modal-ventas" class="ventas-modal" role="dialog" aria-modal="true" aria-labelledby="modal-ventas-titulo" aria-hidden="true">
+    <div class="ventas-card">
+      <div class="ventas-highlight" aria-hidden="true"></div>
+      <div class="ventas-header">
+        <div>
+          <h2 id="modal-ventas-titulo">Enviar catálogo a ventas</h2>
+          <p>Compartí el catálogo actualizado con el equipo comercial.</p>
+        </div>
+        <button type="button" id="btn-cerrar-ventas" class="glass-close-button" aria-label="Cerrar formulario"><span aria-hidden="true">×</span></button>
+      </div>
+
+      <div class="ventas-summary">
+        <span id="cantidad-envio">0 servicios cargados</span>
+        <small>Se enviará el catálogo completo.</small>
+      </div>
+
+      <form id="form-ventas">
+        <div class="ventas-field">
+          <label for="ventas-responsable">Responsable</label>
+          <input type="text" id="ventas-responsable" placeholder="Nombre de quien envía" autocomplete="name" required />
+        </div>
+        <div class="ventas-field">
+          <label for="ventas-observaciones">Observaciones</label>
+          <textarea id="ventas-observaciones" rows="4" placeholder="Agregá una nota para el equipo de ventas"></textarea>
+        </div>
+        <button type="submit" class="ventas-submit">Enviar por WhatsApp <span>→</span></button>
+        <p id="mensaje-ventas" class="ventas-feedback" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</body>
+</html>
