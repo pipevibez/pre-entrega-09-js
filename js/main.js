@@ -191,8 +191,18 @@ function cargarServicios() {
     estadoSync.textContent =
       "Se recuperó una copia segura";
 
-    detalleSync.textContent =
-      "Los datos almacenados no pudieron leerse. La aplicación continúa con el catálogo inicial.";
+    try {
+      localStorage.setItem(
+        CLAVE_STORAGE,
+        JSON.stringify(datos)
+      );
+
+      detalleSync.textContent =
+        "Los datos almacenados no eran válidos. Se restauró una copia segura del catálogo.";
+    } catch (storageError) {
+      detalleSync.textContent =
+        "Los datos almacenados no pudieron recuperarse y el almacenamiento local no está disponible. La aplicación continuará con una copia temporal.";
+    }
 
     return datos;
   } finally {
